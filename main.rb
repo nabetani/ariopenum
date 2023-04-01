@@ -49,19 +49,20 @@ def exps
   end
   File.open( "exps.rb", "w" ) do |f|
     f.puts( "def exps(a,b,c,d)" )
-    f.puts( "  [" )
+    f.puts( "  {" )
     m.values.each do |e| 
-      f.puts "    (" + e.max_by{ |x| x.count("+") + x.count("*") - x.count("-") + x.count("/")  }+".abs rescue nil),"
+      best = e.max_by{ |x| x.count("+") + x.count("*") - x.count("-") + x.count("/")  }
+      f.puts "    (#{best}.abs rescue nil)=>true,"
     end
-    f.puts( "  ].compact" )
+    f.puts( "  }" )
     f.puts( "end" )
   end
   pp m.size
 end
 
 def score(n)
-  nums = exps(*n).select{ |x| x==x.to_i }
-  (0...).find{ |x| !nums.index(x) }
+  values = exps(*n)
+  (0...).find{ |x| !values[x] }-1
 end
 
 def main
@@ -70,8 +71,7 @@ def main
     scores.push( [score(n), n] )
   end
   pp scores.sort.reverse.take(10)
-  p exps(1,2,6,7).select{ |x| x==x.to_i }.sort.uniq
-  p exps(5,6,8,9).select{ |x| x==x.to_i }.sort.uniq
+  p exps(1,2,6,7).keys.select{ |x| x && x==x.to_i }.sort.uniq
 end
 
 exps
