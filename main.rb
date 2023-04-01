@@ -45,7 +45,8 @@ def make_exps
   m=Hash.new{ |h,k| h[k]=[] }
   n=nums
   exps_impl( true, %w(a b c d) ) do |x|
-    m[evalexp(x,*n)].push x
+    key = evalexp(x,*n)
+    m[key].push x if key
   end
   File.open( "exps.rb", "w" ) do |f|
     f.puts( "def exps(a,b,c,d)" )
@@ -62,16 +63,25 @@ end
 
 def score(n)
   values = exps(*n)
-  (0...).find{ |x| !values[x] }-1
+  (0...).find{ |x| !values[x.to_r] }-1
 end
 
 def main
   scores=[]
-  [*0..9].repeated_combination(4) do |n|
+  [*0..9].map(&:to_r).repeated_combination(4) do |n|
     scores.push( [score(n), n] )
   end
-  pp scores.sort.reverse.take(10)
-  p exps(1,2,6,7).keys.select{ |x| x && x==x.to_i }.sort.uniq
+  prev_m=nil
+  prev_ord=nil
+  scores.sort.reverse.take(12).each.with_index(1) do |(m,d),ix|
+    ord = prev_m==m ? prev_ord : ix
+    unless prev_m==m
+      prev_ord = ix 
+      prev_m = m
+    end
+    puts "|#{ord}|#{m}|#{d.map(&:to_i).join(",")}|"
+  end
+  # p exps(1,2,5,8).keys.select{ |x| x && x==x.to_i }.map(&:to_i ).sort.uniq.take(100)
 end
 
 make_exps
