@@ -41,7 +41,7 @@ def evalexp(ex,a,b,c,d)
 end
 
 
-def exps
+def make_exps
   m=Hash.new{ |h,k| h[k]=[] }
   n=nums
   exps_impl( true, %w(a b c d) ) do |x|
@@ -74,7 +74,7 @@ def main
   p exps(1,2,6,7).keys.select{ |x| x && x==x.to_i }.sort.uniq
 end
 
-exps
+make_exps
 require "./exps.rb"
 main
 
